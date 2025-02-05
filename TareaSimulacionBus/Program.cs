@@ -28,11 +28,12 @@ bool lluvia = rand.Next(1, 11) <= 3;
 bool trafico = rand.Next(1, 11) <= 4;
 bool accidente = rand.Next(1, 21) == 1;
 
-Dictionary<string, int> pasajerosPorParada = new Dictionary<string, int>
-    {
-        { "Nagua", 0 },
-        { "San Francisco de Macorís", 0 }
-    };
+Dictionary<string, InfoParada> pasajerosPorParada = new Dictionary<string, InfoParada>
+{
+    { "Nagua", new InfoParada { PasajerosEnEspera = 0, PasajerosTotales = 0, VecesSalida = 0 } },
+    { "San Francisco de Macorís", new InfoParada { PasajerosEnEspera = 0, PasajerosTotales = 0, VecesSalida = 0 } }
+};
+
 
 
 while (!detenerViaje) // Bucle que se ejecuta hasta que se presione la barra espaciadora
@@ -55,18 +56,21 @@ while (!detenerViaje) // Bucle que se ejecuta hasta que se presione la barra esp
     Thread.Sleep(2000);
 }
 
-Console.WriteLine("\n¡Viaje terminado!");
+Console.WriteLine("\n¡Viaje terminado!\n\n");
+MostrarResultadoTamanoParada();
 
 void MontarPasajeros(ref int pasajeroEsperando, ref int primerosEnSubir)
 {
     int pasajerosNuevosMontados = 0;
     //pasajeroMontado = 0;
-    primerosEnSubir = pasajerosPorParada[paradas[paradaIndex]];
+    //string paradaActual = paradas[paradaIndex];
+    
+    pasajerosPorParada[paradas[paradaIndex]].PasajerosTotales += pasajeroEsperando;
 
     Console.WriteLine(" =========================================================");
     Console.WriteLine($"  [{hora:D2}:{minutos:D2}] Bus sale de Estación {paradas[paradaIndex]}");
     Console.WriteLine(" =========================================================");
-    Console.WriteLine($"  Pasajeros que habían en la Parada: {pasajerosPorParada[paradas[paradaIndex]]}");
+    Console.WriteLine($"  Pasajeros que habían en la Parada: {pasajerosPorParada[paradas[paradaIndex]].PasajerosEnEspera}");
     Console.WriteLine($"  Pasajeros nuevos: {pasajeroEsperando}");
 
     for (int i = 0; i < bus.Length; i++)
@@ -93,13 +97,14 @@ void MontarPasajeros(ref int pasajeroEsperando, ref int primerosEnSubir)
     }
 
     primerosEnSubir += pasajeroEsperando;
-    pasajerosPorParada[paradas[paradaIndex]] = primerosEnSubir;
+    pasajerosPorParada[paradas[paradaIndex]].PasajerosEnEspera = primerosEnSubir;
+    pasajerosPorParada[paradas[paradaIndex]].VecesSalida++;
 
     Console.WriteLine($"  Pasajeros que se desmontados: {pasajeroDesmontado}");
     Console.WriteLine($"  Pasajeros que se montados: {pasajerosNuevosMontados}");
     Console.WriteLine($"  Total de Pasajeros en el bus: {pasajeroMontado}");
-    Console.WriteLine($"  Pasajeros en espera del regreso de la guagua: {pasajerosPorParada[paradas[paradaIndex]]}");
-    Console.WriteLine("   Hora estimada de viaje: 1 hora y 15 minutos"); 
+    Console.WriteLine($"  Pasajeros en espera del regreso de la guagua: {pasajerosPorParada[paradas[paradaIndex]].PasajerosEnEspera}");
+    Console.WriteLine("  Hora estimada de viaje: 1 hora y 15 minutos"); 
     Console.WriteLine(" ---------------------------------------------------------\n\n\n");
 }
 
@@ -180,9 +185,26 @@ void Retraso()
     }
 }
 
+void MostrarResultadoTamanoParada()
+{
+    foreach (var parada in pasajerosPorParada)
+    {
+        Console.WriteLine("===================================================================");
+        Console.WriteLine($"Parada: {parada.Key}");
+        Console.WriteLine($"Total pasajeros que llegaron: {parada.Value.PasajerosTotales}");
+        Console.WriteLine($"Veces que salió el bus: {parada.Value.VecesSalida}");
+        Console.WriteLine($"Tamaño estimado de la parada: {parada.Value.PasajerosTotales/parada.Value.VecesSalida} personas");
+        //Console.WriteLine("----------------------------------------------------------------\n\n");
+        Console.WriteLine("===================================================================\n\n");
+    }
+}
 
-
-
+class InfoParada
+{
+    public int PasajerosEnEspera { get; set; }
+    public int PasajerosTotales { get; set; }
+    public int VecesSalida { get; set; }
+}
 
 
 
