@@ -5,6 +5,7 @@ keyListener.Start();
 
 Random pasajeros = new Random();
 Random desmontarPasajero = new Random();
+Random rand = new Random();
  
 int hora = 6;
 int minutos = 0;
@@ -19,6 +20,21 @@ int paradaIndex = 0;
 int primerosEnSubir = 0;
 
 
+
+
+// Variables que pueden afectar el tiempo con sus probabilidades
+bool ponchadura = rand.Next(1, 11) <= 2;
+bool lluvia = rand.Next(1, 11) <= 3;
+bool trafico = rand.Next(1, 11) <= 4;
+bool accidente = rand.Next(1, 21) == 1;
+
+Dictionary<string, int> pasajerosPorParada = new Dictionary<string, int>
+    {
+        { "Nagua", 0 },
+        { "San Francisco de Macorís", 0 }
+    };
+
+
 while (!detenerViaje) // Bucle que se ejecuta hasta que se presione la barra espaciadora
 {
     int pasajeroEsperando = pasajeros.Next(100);
@@ -31,7 +47,10 @@ while (!detenerViaje) // Bucle que se ejecuta hasta que se presione la barra esp
 
     paradaIndex = (paradaIndex + 1) % 2;
 
-    AumentarHora();
+    Retraso();
+
+    AumentarMinutos(15);
+    hora++;
 
     Thread.Sleep(2000);
 }
@@ -41,10 +60,14 @@ Console.WriteLine("\n¡Viaje terminado!");
 void MontarPasajeros(ref int pasajeroEsperando, ref int primerosEnSubir)
 {
     int pasajerosNuevosMontados = 0;
-    Console.WriteLine($"\nHora: {hora:D2}:{minutos:D2} AM");
-    Console.WriteLine($"\nParada: {paradas[paradaIndex]}");
-    Console.WriteLine($"Pasajeros que habían en la Parada: {primerosEnSubir}");
-    Console.WriteLine($"Pasajeros nuevos: {pasajeroEsperando}");
+    //pasajeroMontado = 0;
+    primerosEnSubir = pasajerosPorParada[paradas[paradaIndex]];
+
+    Console.WriteLine(" =========================================================");
+    Console.WriteLine($"  [{hora:D2}:{minutos:D2}] Bus sale de Estación {paradas[paradaIndex]}");
+    Console.WriteLine(" =========================================================");
+    Console.WriteLine($"  Pasajeros que habían en la Parada: {pasajerosPorParada[paradas[paradaIndex]]}");
+    Console.WriteLine($"  Pasajeros nuevos: {pasajeroEsperando}");
 
     for (int i = 0; i < bus.Length; i++)
     {
@@ -69,13 +92,15 @@ void MontarPasajeros(ref int pasajeroEsperando, ref int primerosEnSubir)
         }
     }
 
-    primerosEnSubir = pasajeroEsperando;
+    primerosEnSubir += pasajeroEsperando;
+    pasajerosPorParada[paradas[paradaIndex]] = primerosEnSubir;
 
-    Console.WriteLine($"Pasajeros que se desmontados: {pasajeroDesmontado}");
-    Console.WriteLine($"Pasajeros que se montados: {pasajerosNuevosMontados}");
-    Console.WriteLine($"Total de Pasajeros en el bus: {pasajeroMontado}");
-    Console.WriteLine($"Pasajeros en espera del regreso de la guagua: {primerosEnSubir}");
-    Console.WriteLine("--------------------------------------------------------------------------");
+    Console.WriteLine($"  Pasajeros que se desmontados: {pasajeroDesmontado}");
+    Console.WriteLine($"  Pasajeros que se montados: {pasajerosNuevosMontados}");
+    Console.WriteLine($"  Total de Pasajeros en el bus: {pasajeroMontado}");
+    Console.WriteLine($"  Pasajeros en espera del regreso de la guagua: {pasajerosPorParada[paradas[paradaIndex]]}");
+    Console.WriteLine("   Hora estimada de viaje: 1 hora y 15 minutos"); 
+    Console.WriteLine(" ---------------------------------------------------------\n\n\n");
 }
 
 void DesmontarPasajeros(ref int pasajeroDesmontado)
@@ -98,15 +123,14 @@ void DesmontarPasajeros(ref int pasajeroDesmontado)
     }
 }
 
-void AumentarHora()
+void AumentarMinutos(int min)
 {
-    minutos += 15;
+    minutos += min;
     if (minutos >= 60)
     {
         minutos -= 60;
         hora++;
     }
-    hora++;
 }
 void DetectarTecla()
 {
@@ -118,6 +142,41 @@ void DetectarTecla()
             break;
         }
         Thread.Sleep(100);
+    }
+}
+
+void Retraso()
+{
+    if (ponchadura)
+    {
+        Console.WriteLine(" *********************************************************");
+        Console.WriteLine("  Se ha ponchado una goma. +20 min");
+        Console.WriteLine(" *********************************************************\n\n\n");
+        AumentarMinutos(20);
+    }
+    if (lluvia)
+    {
+        int retraso = rand.Next(10, 31);
+        Console.WriteLine(" *********************************************************");
+        Console.WriteLine($"  Lluvia intensa. +{retraso} min");
+        Console.WriteLine(" *********************************************************\n\n\n");
+        AumentarMinutos(retraso);
+    }
+    if (trafico)
+    {
+        int retraso = rand.Next(5, 16);
+        Console.WriteLine(" *********************************************************");
+        Console.WriteLine($"  Tráfico pesado. +{retraso} min");
+        Console.WriteLine(" *********************************************************\n\n\n");
+        AumentarMinutos(retraso);
+    }
+    if (accidente)
+    {
+        int retraso = rand.Next(15, 46);
+        Console.WriteLine(" *********************************************************");
+        Console.WriteLine($"  Accidente en la vía. +{retraso} min");
+        Console.WriteLine(" *********************************************************\n\n\n");
+        AumentarMinutos(retraso);
     }
 }
 
