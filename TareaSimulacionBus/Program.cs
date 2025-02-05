@@ -59,19 +59,20 @@ while (!detenerViaje) // Bucle que se ejecuta hasta que se presione la barra esp
 Console.WriteLine("\n¡Viaje terminado!\n\n");
 MostrarResultadoTamanoParada();
 
-void MontarPasajeros(ref int pasajeroEsperando, ref int primerosEnSubir)
+void MontarPasajeros(ref int pasajerosNuevos, ref int primerosEnSubir)
 {
     int pasajerosNuevosMontados = 0;
     //pasajeroMontado = 0;
     //string paradaActual = paradas[paradaIndex];
     
-    pasajerosPorParada[paradas[paradaIndex]].PasajerosTotales += pasajeroEsperando;
+    pasajerosPorParada[paradas[paradaIndex]].PasajerosTotales += pasajerosNuevos;
+    primerosEnSubir = pasajerosPorParada[paradas[paradaIndex]].PasajerosEnEspera;
 
     Console.WriteLine(" =========================================================");
     Console.WriteLine($"  [{hora:D2}:{minutos:D2}] Bus sale de Estación {paradas[paradaIndex]}");
     Console.WriteLine(" =========================================================");
     Console.WriteLine($"  Pasajeros que habían en la Parada: {pasajerosPorParada[paradas[paradaIndex]].PasajerosEnEspera}");
-    Console.WriteLine($"  Pasajeros nuevos: {pasajeroEsperando}");
+    Console.WriteLine($"  Pasajeros nuevos: {pasajerosNuevos}");
 
     for (int i = 0; i < bus.Length; i++)
     {
@@ -84,19 +85,19 @@ void MontarPasajeros(ref int pasajeroEsperando, ref int primerosEnSubir)
                 pasajerosNuevosMontados++;
                 primerosEnSubir--;
             }
-            else if (pasajeroEsperando > 0)
+            else if (pasajerosNuevos > 0)
             {
                 bus[i] = 1;
                 pasajeroMontado++;
                 pasajerosNuevosMontados++;
-                pasajeroEsperando--;
+                pasajerosNuevos--;
                 //if (pasajeroDesmontado > 0)
                 //    pasajeroDesmontado--;
             }
         }
     }
 
-    primerosEnSubir += pasajeroEsperando;
+    primerosEnSubir += pasajerosNuevos;
     pasajerosPorParada[paradas[paradaIndex]].PasajerosEnEspera = primerosEnSubir;
     pasajerosPorParada[paradas[paradaIndex]].VecesSalida++;
 
