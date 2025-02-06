@@ -24,6 +24,7 @@ int perdidaDeDinero = 0;
 int precioPasaje = 100;
 int totalPasajeroQueNoSeBajan = 0;
 int pasajerosNuevosMontados = 0;
+int pasajerosQueSeFueronDePrimerosEnEspera = 0;
 
 
 
@@ -51,6 +52,7 @@ while (!detenerViaje)
 
     Thread.Sleep(3000);
 
+    //PasajerosEnEsperaQueSeVan();
     MontarPasajeros(ref pasajerosNue, ref primerosEnSubir);
 
     AumentarMinutos(15);
@@ -87,6 +89,7 @@ void MontarPasajeros(ref int pasajerosNuevos, ref int primerosEnSubir)
     Console.WriteLine($"  Capacidad de la guagua: {capacidadBus}");
     Console.WriteLine($"  Precio de pasaje: ${precioPasaje}.00");
     Console.WriteLine($"  Pasajeros que habían en espera del bus: {pasajerosPorParada[paradas[paradaIndex]].PasajerosEnEspera}");
+    //Console.WriteLine($"  Pasajeros que se fueron por no esperar el bus: {pasajerosQueSeFueronDePrimerosEnEspera}");
     Console.WriteLine($"  Pasajeros nuevos: {pasajerosNuevos}");
 
     for (int i = 0; i < bus.Length; i++)
@@ -119,7 +122,7 @@ void MontarPasajeros(ref int pasajerosNuevos, ref int primerosEnSubir)
 
     Console.WriteLine($"  Pasajeros que se desmontados: {pasajeroDesmontado}");
     Console.WriteLine($"  Pasajeros que se montados: {pasajerosNuevosMontados}");
-    Console.WriteLine($"  Pasajeros que no se desmontaron: {cantidadPasajerosAntes - pasajeroDesmontado}");
+    //Console.WriteLine($"  Pasajeros que no se desmontaron: {cantidadPasajerosAntes - pasajeroDesmontado}");
     Console.WriteLine($"  Total de Pasajeros en el bus: {pasajeroMontado}");
     Console.WriteLine($"  Pasajeros en espera del regreso del bus: {pasajerosPorParada[paradas[paradaIndex]].PasajerosEnEspera}");
     Console.WriteLine("  Hora estimada de viaje: 1 hora y 15 minutos");
@@ -153,6 +156,24 @@ void DesmontarPasajeros(ref int pasajeroDesmontado)
     totalPasajeroQueNoSeBajan += pasajerosQueNoSeBajanEnEstaParada;
     perdidaDeDinero += precioPasaje * pasajerosQueNoSeBajanEnEstaParada;
 
+}
+
+void PasajerosEnEsperaQueSeVan()
+{
+    pasajerosQueSeVan = new int[pasajerosPorParada[paradas[paradaIndex]].PrimerosEnEntrar];
+    int contador = 0;
+
+    for (int i = 0; pasajerosQueSeVan.Length > 0; i++)
+    {
+        int desmontar = desmontarPasajero.Next(0, 2);
+        if (desmontar > 0)
+            pasajerosQueSeVan[i] = 0;
+        else
+            contador++;
+    }
+
+    pasajerosQueSeFueronDePrimerosEnEspera = pasajerosPorParada[paradas[paradaIndex]].PrimerosEnEntrar - contador;
+    pasajerosPorParada[paradas[paradaIndex]].PrimerosEnEntrar = contador;
 }
 
 void AumentarMinutos(int min)
@@ -232,22 +253,6 @@ void MostrarResultadoPerdidaDeDinero()
     Console.WriteLine($"La pérdida total de dinero es de ${perdidaDeDinero:N2}:");
 
 }
-
-//void MostrarTabla(int pasajerosNuevos, int pasajerosNuevosMontados)
-//{
-//    Console.WriteLine(" =========================================================");
-//    Console.WriteLine($"  [{hora:D2}:{minutos:D2}] Bus sale de Estación {paradas[paradaIndex]}");
-//    Console.WriteLine(" =========================================================");
-//    Console.WriteLine($"  Pasajeros que habían en la Parada: {pasajerosPorParada[paradas[paradaIndex]].PasajerosEnEspera}");
-//    Console.WriteLine($"  Pasajeros nuevos: {pasajerosNuevos}");
-
-//    Console.WriteLine($"  Pasajeros que se desmontados: {pasajeroDesmontado}");
-//    Console.WriteLine($"  Pasajeros que se montados: {pasajerosNuevosMontados}");
-//    Console.WriteLine($"  Total de Pasajeros en el bus: {pasajeroMontado}");
-//    Console.WriteLine($"  Pasajeros en espera del regreso de la guagua: {pasajerosPorParada[paradas[paradaIndex]].PrimerosEnEntrar}");
-//    Console.WriteLine("  Hora estimada de viaje: 1 hora y 15 minutos");
-//    Console.WriteLine(" ---------------------------------------------------------\n\n\n");
-//}
 
 class InfoParada
 {
